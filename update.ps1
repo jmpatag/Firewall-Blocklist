@@ -69,10 +69,10 @@ if ($hasChanges) {
     Add-Content -Path $combinedFile -Value (Get-Content $combinedTemp)
 
     # -------------------------------
-    # Log for GitHub Actions
+    # Log success for GitHub Actions
     # -------------------------------
     Write-Host "✅ Changes detected, updating combined_blocklist.txt"
-    Write-Host "::notice::Blocklist updated successfully at $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+    Write-Host '::notice::Blocklist updated successfully at ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')
 
     # -------------------------------
     # Git commit & push
@@ -82,7 +82,7 @@ if ($hasChanges) {
     git push
 } else {
     Write-Host "ℹ️ No changes detected. Skipping commit."
-    Write-Host "::notice::No changes in blocklist at $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+    Write-Host '::notice::No changes in blocklist at ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')
 }
 
 # -------------------------------
