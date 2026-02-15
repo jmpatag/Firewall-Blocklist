@@ -1,41 +1,35 @@
-Automatically downloads, merges, deduplicates, and updates multiple high-confidence IP threat blocklists every 12 hours
+📌 Description
 
+This repository automatically downloads, merges, and updates multiple public IP blocklists every 12 hours, then commits the updated list to GitHub.
 
-🔐 Auto-Update IP Threat Blocklist
+The goal is to maintain a clean, up-to-date consolidated blocklist that can be used for routers, firewalls or other network filtering systems.
 
-This repository contains an automated PowerShell script that:
+🔄 Update Schedule
 
-Downloads multiple trusted IP threat intelligence feeds
+Runs automatically every 12 hours
 
-Removes comments and empty lines
+Fetches the latest IP blocklists
 
-Deduplicates all IPs and CIDR ranges
+Merges and removes duplicates
 
-Generates a clean combined blocklist
+Pushes updates to this repository
 
-The goal is to maintain a low false-positive, high-confidence IP blocklist suitable for firewalls, routers, and DNS filtering systems.
+⚠ Sources
 
-📦 Sources Included
+FireHOL – https://iplists.firehol.org/
 
-This combined list pulls from:
+HaGeZi – https://github.com/hagezi/dns-blocklists
 
-Website: https://iplists.firehol.org/
-FireHOL Cybercrime
-FireHOL ET Compromised
-FireHOL Level 2
+Spamhaus DROP – https://www.spamhaus.org/drop/
 
-Spamhaus DROP (official)
-Website: https://www.spamhaus.org/
+blocklist.de – https://www.blocklist.de/
 
-HaGeZi TIF IP list
-Website: https://github.com/hagezi/dns-blocklists
+⚠ Disclaimer
 
-blocklist.de SIP/FTP attackers
-Website: https://www.blocklist.de/en/
+This repository does not create, verify, or modify the original threat intelligence data.
+All IP addresses and networks are sourced directly from the upstream providers listed above.
 
-All sources are reputable and focused on:
-Malware infrastructure
-Botnet controllers
-Compromised hosts
-Criminal hosting networks
-Scanner and attack sources
+Blocking decisions are the responsibility of the user.
+False positives may occur, and no guarantee is made regarding accuracy, completeness, or suitability for any particular purpose.
+
+Use at your own risk.
