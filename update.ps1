@@ -38,7 +38,7 @@ foreach ($url in $urls) {
         Write-Host "Downloaded: $url"
     }
     catch {
-        Write-Host "❌ Failed to download $url"
+        Write-Host "Failed to download $url"
     }
 }
 
@@ -71,7 +71,7 @@ if ($hasChanges) {
     # -------------------------------
     # Log success for GitHub Actions
     # -------------------------------
-    Write-Host "✅ Changes detected, updating combined_blocklist.txt"
+    Write-Host "Changes detected. Updating combined_blocklist.txt"
     Write-Host '::notice::Blocklist updated successfully at ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')
 
     # -------------------------------
@@ -81,7 +81,7 @@ if ($hasChanges) {
     git commit -m "Auto update blocklist $(Get-Date -Format 'yyyy-MM-dd HH:mm')" -ErrorAction SilentlyContinue
     git push
 } else {
-    Write-Host "ℹ️ No changes detected. Skipping commit."
+    Write-Host "No changes detected. Skipping commit."
     Write-Host '::notice::No changes in blocklist at ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')
 }
 
