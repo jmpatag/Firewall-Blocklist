@@ -10,31 +10,35 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    # Step 1: Checkout repo
     - name: Checkout repo
       uses: actions/checkout@v3
 
+    # Step 2: Set PowerShell execution policy
     - name: Set PowerShell execution policy
       shell: powershell
       run: Set-ExecutionPolicy RemoteSigned -Scope Process -Force
 
+    # Step 3: Run the blocklist update script
     - name: Run update script
       shell: powershell
       run: .\update.ps1
 
+    # Step 4: Configure Git user
     - name: Configure Git user
       shell: powershell
       run: |
         git config user.name "github-actions"
         git config user.email "actions@github.com"
 
+    # Step 5: Commit and Push only if there are changes
     - name: Commit and Push changes
       shell: powershell
       run: |
-        # Only commit if there are changes
-        if (-not (git diff --quiet)) {
-          git add combined_blocklist.txt
-          git commit -m "Auto update blocklist $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+        git add combined_blocklist.txt
+        if (-not (git diff --cached --quiet)) {
+            git commit -m "Auto update blocklist $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
         } else {
-          Write-Host "No changes detected. Skipping commit."
+            Write-Host "No changes detected. Skipping commit."
         }
