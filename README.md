@@ -11,9 +11,13 @@ Merges and removes duplicates
 Pushes updates to this repository
 
 ⚠ Sources
+
 FireHOL – https://iplists.firehol.org/
+
 HaGeZi – https://github.com/hagezi/dns-blocklists
+
 Spamhaus DROP – https://www.spamhaus.org/drop/
+
 blocklist.de – https://www.blocklist.de/
 
 ⚠ Disclaimer
