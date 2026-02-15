@@ -1,32 +1,55 @@
 name: Update Firewall Blocklist
 
+# -------------------------------
+# Triggers
+# -------------------------------
 on:
   schedule:
     # Runs every 6 hours
-    - cron:  "0 */6 * * *"
-  workflow_dispatch:  # Allows manual trigger from GitHub
+    - cron: "0 */6 * * *"
+  workflow_dispatch:  # Manual trigger option
 
+# -------------------------------
+# Jobs
+# -------------------------------
 jobs:
   update-blocklist:
     runs-on: windows-latest
 
     steps:
+    # -------------------------------
+    # Step 1: Checkout repo
+    # -------------------------------
     - name: Checkout repo
       uses: actions/checkout@v3
 
+    # -------------------------------
+    # Step 2: Set PowerShell execution policy
+    # -------------------------------
     - name: Set PowerShell execution policy
       shell: powershell
       run: Set-ExecutionPolicy RemoteSigned -Scope Process -Force
 
+    # -------------------------------
+    # Step 3: Run the blocklist update script
+    # -------------------------------
     - name: Run update script
       shell: powershell
       run: .\update.ps1
 
-    - name: Push changes
-      shell: powershell
+    # -------------------------------
+    # Step 4: Configure Git
+    # -------------------------------
+    - name: Configure Git user
       run: |
         git config user.name "github-actions"
         git config user.email "actions@github.com"
+
+    # -------------------------------
+    # Step 5: Commit and push changes using GitHub token
+    # -------------------------------
+    - name: Push changes
+      run: |
         git add combined_blocklist.txt
         git commit -m "Auto update blocklist $(Get-Date -Format 'yyyy-MM-dd HH:mm')" -ErrorAction SilentlyContinue
-        git push
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
