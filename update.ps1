@@ -46,6 +46,7 @@ foreach ($url in $urls) {
 # Combine, clean, remove duplicates
 # -------------------------------
 $combinedTemp = "combined_blocklist_new.txt"
+$combinedFile = "combined_blocklist.txt"
 
 Get-Content "$tempFolder\*" |
 Where-Object {$_ -notmatch '^(#|;|$)'} |  # Remove comments/empty lines
@@ -55,34 +56,18 @@ Set-Content $combinedTemp
 # -------------------------------
 # Check if file has changed
 # -------------------------------
-$combinedFile = "combined_blocklist.txt"
-
 $hasChanges = -Not (Test-Path $combinedFile) -or
     -Not (Compare-Object (Get-Content $combinedFile) (Get-Content $combinedTemp))
 
 if ($hasChanges) {
-    # -------------------------------
-    # Add timestamp at the top
-    # -------------------------------
+    # Overwrite tracked file with new blocklist
     $timestamp = "# Last updated: $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
     Set-Content -Path $combinedFile -Value $timestamp
     Add-Content -Path $combinedFile -Value (Get-Content $combinedTemp)
 
-    # -------------------------------
-    # Log success for GitHub Actions
-    # -------------------------------
-    Write-Host "Changes detected. Updating combined_blocklist.txt"
     Write-Host '::notice::Blocklist updated successfully at ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')
-
-    # -------------------------------
-    # Git commit & push
-    # -------------------------------
-    git add $combinedFile
-    git commit -m "Auto update blocklist $(Get-Date -Format 'yyyy-MM-dd HH:mm')" -ErrorAction SilentlyContinue
-    git push
 } else {
-    Write-Host "No changes detected. Skipping commit."
-    Write-Host '::notice::No changes in blocklist at ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')
+    Write-Host '::notice::No changes detected at ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')
 }
 
 # -------------------------------
