@@ -1,14 +1,6 @@
-# ===============================
-# Auto-Update Firewall Blocklist
-# Optimized for GitHub Actions
-# ===============================
-
-# Force TLS 1.2 for HTTPS downloads
+$ProgressPreference = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-# -------------------------------
-# List of upstream blocklists
-# -------------------------------
 $urls = @(
     "https://iplists.firehol.org/files/cybercrime.ipset",
     "https://iplists.firehol.org/files/et_compromised.ipset",
@@ -19,58 +11,43 @@ $urls = @(
     "http://lists.blocklist.de/lists/ftp.txt"
 )
 
-# Temporary folder for downloads
 $tempFolder = "temp_lists"
+$combinedFile = "combined_blocklist.txt"
+$combinedTemp = "combined_new.tmp"
 
-# -------------------------------
-# Clean old temp folder
-# -------------------------------
-Remove-Item -Recurse -Force $tempFolder -ErrorAction SilentlyContinue
+if (Test-Path $tempFolder) { Remove-Item -Recurse -Force $tempFolder }
 New-Item -ItemType Directory -Path $tempFolder | Out-Null
 
-# -------------------------------
-# Download all lists
-# -------------------------------
 foreach ($url in $urls) {
     try {
-        $file = Join-Path $tempFolder (Split-Path $url -Leaf)
-        Invoke-WebRequest -Uri $url -OutFile $file -UseBasicParsing
-        Write-Host "Downloaded: $url"
+        $dest = Join-Path $tempFolder (Split-Path $url -Leaf)
+        Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -UserAgent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
     }
     catch {
-        Write-Host "Failed to download $url"
+        continue
     }
 }
 
-# -------------------------------
-# Combine, clean, remove duplicates
-# -------------------------------
-$combinedTemp = "combined_blocklist_new.txt"
-$combinedFile = "combined_blocklist.txt"
+$ipRegex = '^\d{1,3}(\.\d{1,3}){3}(/\d{1,2})?$'
+$data = Get-Content "$tempFolder\*" | Where-Object { $_ -match $ipRegex } | Sort-Object -Unique
 
-Get-Content "$tempFolder\*" |
-Where-Object {$_ -notmatch '^(#|;|$)'} |  # Remove comments/empty lines
-Sort-Object -Unique |
-Set-Content $combinedTemp
+$timestamp = "# Last updated: $(Get-Date -Format 'yyyy-MM-dd HH:mm') (UTC)"
+$finalOutput = $timestamp + "`n" + ($data -join "`n")
+[System.IO.File]::WriteAllText("$(Get-Location)\$combinedTemp", $finalOutput)
 
-# -------------------------------
-# Check if file has changed
-# -------------------------------
-$hasChanges = -Not (Test-Path $combinedFile) -or
-    -Not (Compare-Object (Get-Content $combinedFile) (Get-Content $combinedTemp))
-
-if ($hasChanges) {
-    # Overwrite tracked file with new blocklist
-    $timestamp = "# Last updated: $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
-    Set-Content -Path $combinedFile -Value $timestamp
-    Add-Content -Path $combinedFile -Value (Get-Content $combinedTemp)
-
-    Write-Host '::notice::Blocklist updated successfully at ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')
-} else {
-    Write-Host '::notice::No changes detected at ' + (Get-Date -Format 'yyyy-MM-dd HH:mm')
+$hasChanged = $true
+if (Test-Path $combinedFile) {
+    $oldHash = (Get-FileHash $combinedFile -Algorithm SHA256).Hash
+    $newHash = (Get-FileHash $combinedTemp -Algorithm SHA256).Hash
+    if ($oldHash -eq $newHash) { $hasChanged = $false }
 }
 
-# -------------------------------
-# Cleanup temp folder
-# -------------------------------
-Remove-Item -Recurse -Force $tempFolder
+if ($hasChanged) {
+    Move-Item -Path $combinedTemp -Destination $combinedFile -Force
+    Write-Host "::notice::Blocklist updated."
+} else {
+    if (Test-Path $combinedTemp) { Remove-Item $combinedTemp }
+    Write-Host "::notice::No changes found."
+}
+
+if (Test-Path $tempFolder) { Remove-Item -Recurse -Force $tempFolder }
