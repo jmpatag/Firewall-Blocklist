@@ -1,28 +1,28 @@
-📌 Description
+# 🛡️ Blocklist
 
-This repository automatically downloads, merges, and updates multiple public IP blocklists every 12 hours
-The goal is to maintain a clean, up-to-date consolidated blocklist
+[![Update Status](https://github.com/jmpatag/Firewall-Blocklist/actions/workflows/update-blocklist.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions)
 
-🔄 Update Schedule
+An ultra-lean IP blocklist optimized for low-RAM/CPU firewalls.
+---
 
-Runs automatically every 12 hours
-Fetches the latest IP blocklists
-Merges and removes duplicates
-Pushes updates to this repository
+### 🚀 Features
+* **Auto-Cleaning:** Uses Regex to strip comments and invalid data.
+* **Optimized:** Merges sources, removes duplicates, and sorts numerically.
+* **Smart Updates:** Only commits if the **SHA256 hash** of the content changes.
 
-⚠ Sources
+### 📡 Sources
+* **FireHOL** (Cybercrime/Compromised) - https://iplists.firehol.org/
+* **HaGeZi** (DNS/Threat Intelligence) - https://github.com/hagezi/dns-blocklists
+* **Spamhaus DROP** (Malicious Networks) - https://www.spamhaus.org/drop/
+* **Blocklist.de** (SSH/FTP/SIP Attacks) - https://www.blocklist.de/
 
-FireHOL – https://iplists.firehol.org/
+### 📂 Output Data
+👉 **[Download Combined Blocklist](./combined_blocklist.txt)**
 
-HaGeZi – https://github.com/hagezi/dns-blocklists
+---
 
-Spamhaus DROP – https://www.spamhaus.org/drop/
+### ⚠️ Disclaimer
+I manage the processing and aggregation for this list. While the threat intelligence comes from external providers, I handle the filtering and deduplication to ensure the final file is as lean as possible for my hardware.
 
-blocklist.de – https://www.blocklist.de/
-
-⚠ Disclaimer
-This repository does not create, verify, or modify the original threat intelligence data.
-All IP addresses and networks are sourced directly from the upstream providers listed above.
-
-Blocking decisions are the responsibility of the user.
-False positives may occur, and no guarantee is made regarding accuracy, completeness, or suitability for any particular purpose.
+* **Accuracy:** I do not verify the malicious nature of the IPs; I rely on the upstream providers listed above.
+* **Responsibility:** False positives may occur. Blocking decisions and their impact on your network are your sole responsibility.
