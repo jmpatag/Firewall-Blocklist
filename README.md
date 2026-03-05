@@ -8,7 +8,6 @@ An ultra-lean IP blocklist optimized for low-RAM/CPU firewalls.
 ### 🚀 Features
 * **Auto-Cleaning:** Uses Regex to strip comments and invalid data.
 * **Optimized:** Merges sources, removes duplicates, and sorts numerically.
-* **Smart Updates:** Only commits if the **SHA256 hash** of the content changes.
 
 ### 📡 Sources
 * **FireHOL** (Cybercrime/Compromised) - https://iplists.firehol.org/
